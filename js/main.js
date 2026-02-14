@@ -3,50 +3,54 @@
 
     // Shared site header
     const headerContainer = document.getElementById('site-header');
-    if (headerContainer) {
-        const currentPage = window.location.pathname.split('/').pop() || 'index.html';
-        const navItems = [
-            { href: 'index.html', label: 'Home' },
-            { href: 'about.html', label: 'About' },
-            { href: 'service.html', label: 'Service' },
-            { href: 'contact.html', label: 'Contact' }
-        ];
+    const currentPage = window.location.pathname.split('/').pop() || 'index.html';
 
-        const navLinks = navItems.map(({ href, label }) => {
-            const activeClass = href === currentPage ? ' active' : '';
-            return `<a href="${href}" class="nav-item nav-link${activeClass}">${label}</a>`;
-        }).join('');
-
-        headerContainer.innerHTML = `
-            <nav class="navbar navbar-expand-lg bg-white navbar-light shadow-sm py-3 py-lg-0 px-3 px-lg-0">
-                <a href="index.html" class="navbar-brand ms-lg-5">
-                    <h1 class="display-5 m-0 text-primary">SK<span class="text-secondary">Computers</span></h1>
-                </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarCollapse">
-                    <div class="navbar-nav ms-auto py-0">
-                        ${navLinks}
-                        <a href="tel:+916380654974" class="nav-item nav-link nav-contact bg-secondary text-white px-5 ms-lg-5"><i class="bi bi-telephone-outbound me-2"></i>+916380654974</a>
-                    </div>
-                </div>
-            </nav>
-        `;
+    function markActiveNav() {
+        document.querySelectorAll('[data-nav-page]').forEach((link) => {
+            if (link.getAttribute('data-nav-page') === currentPage) {
+                link.classList.add('active');
+            } else {
+                link.classList.remove('active');
+            }
+        });
     }
+
+    function updateStickyNavbar() {
+        const navbar = document.getElementById('site-navbar');
+        if (!navbar) {
+            return;
+        }
+
+        if (window.scrollY > 40) {
+            navbar.classList.add('sticky-top');
+        } else {
+            navbar.classList.remove('sticky-top');
+        }
+    }
+
+    if (headerContainer) {
+        fetch('headers.html')
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error('Unable to load shared header');
+                }
+                return response.text();
+            })
+            .then((headerHtml) => {
+                headerContainer.innerHTML = headerHtml;
+                markActiveNav();
+                updateStickyNavbar();
+            })
+            .catch(() => {
+                headerContainer.innerHTML = '';
+            });
+    }
+
+    window.addEventListener('scroll', updateStickyNavbar);
 
     // Initiate the wowjs
     new WOW().init();
 
-    // Sticky Navbar
-    $(window).scroll(function () {
-        if ($(this).scrollTop() > 40) {
-            $('.navbar').addClass('sticky-top');
-        } else {
-            $('.navbar').removeClass('sticky-top');
-        }
-    });
-    
     // Dropdown on mouse hover
     $(document).ready(function () {
         function toggleNavbarMethod() {
@@ -63,8 +67,8 @@
         toggleNavbarMethod();
         $(window).resize(toggleNavbarMethod);
     });
-    
-    
+
+
     // Back to top button
     $(window).scroll(function () {
         if ($(this).scrollTop() > 100) {
@@ -115,6 +119,5 @@
             }
         }
     });
-    
-})(jQuery);
 
+})(jQuery);
