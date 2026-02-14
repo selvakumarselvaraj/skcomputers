@@ -44,10 +44,23 @@
         return false;
     });
 
+    // Header carousel auto play
+    const headerCarousel = document.querySelector('#header-carousel');
+    if (headerCarousel) {
+        new bootstrap.Carousel(headerCarousel, {
+            interval: 3000,
+            ride: 'carousel',
+            pause: false,
+            wrap: true
+        });
+    }
+
 
     // Testimonials carousel
     $(".testimonial-carousel").owlCarousel({
         autoplay: true,
+        autoplayTimeout: 3000,
+        autoplayHoverPause: false,
         smartSpeed: 1500,
         margin: 45,
         dots: true,
